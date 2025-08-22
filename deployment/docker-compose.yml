@@ -1,4 +1,35 @@
 
----
+version: '3.8'
 
-### `ingestion/structured_ingestion.py`
+services:
+  backend:
+    build: ../backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../.env
+    depends_on:
+      - db
+
+  dashboard:
+    build: ../dashboard
+    ports:
+      - "8501:8501"
+    env_file:
+      - ../.env
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: anjli
+      POSTGRES_PASSWORD: Maurya2006
+      POSTGRES_DB: scoring_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

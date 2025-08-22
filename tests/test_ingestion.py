@@ -1,5 +1,5 @@
 import pytest
-from ingestion.fetch_news import fetch_financial_news
+from Backend import fetch_financial_news
 import os
 from dotenv import load_dotenv
 
@@ -13,3 +13,6 @@ def test_newsapi_response():
     assert not df.empty
     assert "title" in df.columns
     assert "publishedAt" in df.columns
+
+if __name__ == "__main__":
+    pytest.main()

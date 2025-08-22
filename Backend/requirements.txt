@@ -10,3 +10,4 @@ altair
 python-dotenv
 uvicorn
 fastapi
+sqlalchemy

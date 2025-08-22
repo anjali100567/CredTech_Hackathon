@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from models.train_model import train_interpretable_model
+from Backend.ingestion.models.train_model import train_interpretable_model
 
 def test_logistic_regression_accuracy():
     # Sample data

@@ -1,16 +1,22 @@
 # file: etl_flow_pg.py
-import os
+import os 
 import yfinance as yf
 import requests
 import pandas as pd
 from textblob import TextBlob
-from prefect import flow, task
+
 from datetime import datetime
 import psycopg2
 from datetime import datetime
 from dotenv import load_dotenv
+from pydantic import BaseModel
+from fastapi import FastAPI
+
+app = FastAPI(title="Credit Intelligence API")
+
 
 load_dotenv()
+
 
 # --- DB Connection Helper ---
 def get_db():
@@ -23,13 +29,13 @@ def get_db():
     )
 
 # --- Config ---
-API_KEY = os.getenv("NEWS_API_KEY")
+API_KEY = os.getenv("NEWSAPI_KEY")
 if not API_KEY:
-    raise ValueError("NEWS_API_KEY not found in environment variables. Please set it in your .env file.")
+    raise ValueError("NEWSAPI_KEY not found in environment variables. Please set it in your .env file.")
 TICKER = "AAPL"
 COMPANY = "Apple Inc"
 
-@task
+@app.get("/issuer/{ticker}")
 def ensure_issuer(ticker=TICKER, name=COMPANY):
     conn = get_db()
     cur = conn.cursor()
@@ -41,7 +47,7 @@ def ensure_issuer(ticker=TICKER, name=COMPANY):
     cur.close()
     conn.close()
 
-@task
+@app.get("/prices/{ticker}")
 def fetch_prices(ticker=TICKER, period="1mo", interval="1d"):
     stock = yf.Ticker(ticker)
     df = stock.history(period=period, interval=interval)
@@ -61,7 +67,7 @@ def fetch_prices(ticker=TICKER, period="1mo", interval="1d"):
     conn.close()
     return df
 
-@task
+@app.get("/news/{ticker}")
 def fetch_news(query=COMPANY):
     url = f"https://newsapi.org/v2/everything?q={query}&language=en&sortBy=publishedAt&apiKey={API_KEY}"
     r = requests.get(url)
@@ -101,7 +107,7 @@ def fetch_news(query=COMPANY):
     conn.close()
     return df
 
-@task
+@app.get("/score/{ticker}")
 def compute_score(prices: pd.DataFrame, news: pd.DataFrame):
     avg_sentiment = (
         news["title"].apply(lambda t: TextBlob(str(t)).sentiment.polarity).mean()
@@ -129,7 +135,7 @@ def compute_score(prices: pd.DataFrame, news: pd.DataFrame):
 
     return score
 
-@flow
+
 def credit_pipeline():
     ensure_issuer()
     prices = fetch_prices()
