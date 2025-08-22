@@ -18,6 +18,6 @@ def fetch_news(api_key, query="finance"):
     return pd.DataFrame(articles)
 
 if __name__ == "__main__":
-    df = fetch_news("YOUR_NEWS_API_KEY")
+    df = fetch_news("NEWSAPI_KEY")
     df.to_csv("data/raw/unstructured_data.csv", index=False)
     print("✅ Unstructured news data saved")
