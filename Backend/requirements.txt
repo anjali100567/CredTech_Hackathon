@@ -1,0 +1,12 @@
+flask
+pandas
+yfinance
+scikit-learn
+joblib
+shap
+requests
+plotly
+altair
+python-dotenv
+uvicorn
+fastapi
