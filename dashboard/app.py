@@ -1,4 +1,4 @@
-from Flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify
 import pandas as pd
 from Backend.ingestion.models.scoring_engine import score
 import requests
